@@ -41,18 +41,18 @@ namespace GPSLocator.Controllers
             var service = ServiceScheduler.ScheduledTasks.First(i => i.ServiceId == value.ServiceId.ToUpper());
             if (postType == "start")
             {
-                service.ActualStartDateTime = value.ActualStartDateTime;
+                service.ActualStartDateTime = DateTime.Now;
                 service.Status = Status.Started;
             }
             if (postType == "stop")
             {
-                service.ActualEndDateTime = value.ActualEndDateTime;
+                service.ActualEndDateTime = DateTime.Now;
                 service.Status = Status.Completed;
             }
-            if (postType == "cancelled")
+            if (postType == "cancel")
             {
-                service.ActualStartDateTime = value.ActualStartDateTime;
-                service.ActualEndDateTime = value.ActualEndDateTime;
+                service.ActualStartDateTime = DateTime.Now;
+                service.ActualEndDateTime = DateTime.Now;
                 service.Status = Status.Cancelled;
             }
             if (value.WorkerTracker != null && value.WorkerTracker.Any())
