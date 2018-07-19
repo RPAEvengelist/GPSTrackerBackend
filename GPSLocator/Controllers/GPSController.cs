@@ -64,7 +64,7 @@ namespace GPSLocator.Controllers
                 {
                     Latitude = value.WorkerTracker.First().Latitude,
                     Longitude = value.WorkerTracker.First().Longitude,
-                    Time = value.WorkerTracker.First().Time,
+                    Time = DateTime.Now,
                     TrackerType = postType == "sos" ? TrackerType.SOS : TrackerType.Regular
                 });
             }
