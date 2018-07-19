@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GPSLocator.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +12,12 @@ namespace GPSLocator.Controllers
     [Route("api/GPS")]
     public class GPSController : Controller
     {
+        public static IList<LocationModel> locations = new List<LocationModel>();
         // GET: api/GPS
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<LocationModel> Get()
         {
-            return new string[] { "value1", "value2" };
+            return locations;
         }
 
         // GET: api/GPS/5
@@ -27,8 +29,10 @@ namespace GPSLocator.Controllers
         
         // POST: api/GPS
         [HttpPost]
-        public void Post([FromBody]string value)
+        public IActionResult Post([FromBody]LocationModel value)
         {
+            locations.Add(value);
+            return Ok(value);
         }
         
         // PUT: api/GPS/5
