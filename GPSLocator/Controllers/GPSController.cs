@@ -17,7 +17,7 @@ namespace GPSLocator.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return ServiceScheduler.ScheduledTasks.Where(i=>i.Status==Status.Scheduled).Select(i=>i.ServiceId);
+            return ServiceScheduler.ScheduledTasks.Where(i => i.Status == Status.Scheduled).Select(i => i.ServiceId);
         }
 
         // GET: api/GPS/5
@@ -36,9 +36,9 @@ namespace GPSLocator.Controllers
         //    return Ok(value);
         //}
         [HttpPost]
-        public IActionResult Post([FromBody]ServiceScheduler value,string postType)
+        public IActionResult Post([FromBody]ServiceScheduler value, string postType)
         {
-            var service = ServiceScheduler.ScheduledTasks.First(i => i.ServiceId == value.ServiceId);
+            var service = ServiceScheduler.ScheduledTasks.First(i => i.ServiceId == value.ServiceId.ToUpper());
             if (postType == "start")
             {
                 service.ActualStartDateTime = value.ActualStartDateTime;
@@ -55,14 +55,18 @@ namespace GPSLocator.Controllers
                 service.ActualEndDateTime = value.ActualEndDateTime;
                 service.Status = Status.Cancelled;
             }
-            if (service.WorkerTracker == null)
-                service.WorkerTracker = new List<LocationTracker>();
-            service.WorkerTracker.Add(new LocationTracker
+            if (value.WorkerTracker != null && value.WorkerTracker.Any())
             {
-                Latitude = value.WorkerTracker.First().Latitude,
-                Longitude = value.WorkerTracker.First().Longitude,
-                TrackerType = postType == "sos"? TrackerType.SOS : TrackerType.Regular
-            });
+                if (service.WorkerTracker == null)
+                    service.WorkerTracker = new List<LocationTracker>();
+
+                service.WorkerTracker.Add(new LocationTracker
+                {
+                    Latitude = value.WorkerTracker.First().Latitude,
+                    Longitude = value.WorkerTracker.First().Longitude,
+                    TrackerType = postType == "sos" ? TrackerType.SOS : TrackerType.Regular
+                });
+            }
             return Ok();
         }
         // PUT: api/GPS/5
@@ -70,7 +74,7 @@ namespace GPSLocator.Controllers
         public void Put(int id, [FromBody]string value)
         {
         }
-        
+
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
         public void Delete(int id)
