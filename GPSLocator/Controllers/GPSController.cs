@@ -12,29 +12,59 @@ namespace GPSLocator.Controllers
     [Route("api/GPS")]
     public class GPSController : Controller
     {
-        public static IList<LocationModel> locations = new List<LocationModel>();
+        //public static IList<LocationModel> locations = new List<LocationModel>();
         // GET: api/GPS
         [HttpGet]
-        public IEnumerable<LocationModel> Get()
+        public IEnumerable<string> Get()
         {
-            return locations;
+            return ServiceScheduler.ScheduledTasks.Where(i=>i.Status==Status.Scheduled).Select(i=>i.ServiceId);
         }
 
         // GET: api/GPS/5
         [HttpGet("{id}", Name = "Get")]
         public string Get(int id)
         {
-            return "value";
+            ServiceScheduler.PopulateData();
+            return "rawdata added";
         }
-        
+
         // POST: api/GPS
+        //[HttpPost]
+        //public IActionResult Post([FromBody]LocationModel value)
+        //{
+        //    locations.Add(value);
+        //    return Ok(value);
+        //}
         [HttpPost]
-        public IActionResult Post([FromBody]LocationModel value)
+        public IActionResult Post([FromBody]ServiceScheduler value,string postType)
         {
-            locations.Add(value);
-            return Ok(value);
+            var service = ServiceScheduler.ScheduledTasks.First(i => i.ServiceId == value.ServiceId);
+            if (postType == "start")
+            {
+                service.ActualStartDateTime = value.ActualStartDateTime;
+                service.Status = Status.Started;
+            }
+            if (postType == "stop")
+            {
+                service.ActualEndDateTime = value.ActualEndDateTime;
+                service.Status = Status.Completed;
+            }
+            if (postType == "cancelled")
+            {
+                service.ActualStartDateTime = value.ActualStartDateTime;
+                service.ActualEndDateTime = value.ActualEndDateTime;
+                service.Status = Status.Cancelled;
+            }
+            if (service.WorkerTracker == null)
+                service.WorkerTracker = new List<LocationTracker>();
+            service.WorkerTracker.Add(new LocationTracker
+            {
+                Latitude = value.WorkerTracker.First().Latitude,
+                Longitude = value.WorkerTracker.First().Longitude,
+                TrackerType = postType == "sos"? TrackerType.SOS : TrackerType.Regular
+            });
+            return Ok();
         }
-        
         // PUT: api/GPS/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody]string value)

@@ -12,7 +12,7 @@ namespace GPSLocator.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return View(ServiceScheduler.ScheduledTasks);
         }
 
         public IActionResult About()
@@ -32,6 +32,11 @@ namespace GPSLocator.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        public IActionResult ServiceDetails(string Id)
+        {
+            var service = ServiceScheduler.ScheduledTasks.First(i => i.ServiceId == Id);
+            return View(service);
         }
     }
 }
