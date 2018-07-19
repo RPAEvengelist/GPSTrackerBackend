@@ -38,8 +38,8 @@ namespace GPSLocator.Models
     }
     public class LocationTracker
     {
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
         public DateTime? Time { get; set; }
         public TrackerType TrackerType { get; set; }
     }
